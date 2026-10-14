@@ -29,6 +29,7 @@ HRESULT WINAPI vkd3d_D3DPreprocess(const void *data, SIZE_T size, const char *fi
  * change, by the existence of %TEMP%\fxc2.log.on (logging to %TEMP%\fxc2.log).
  * Sources that fail to compile are saved next to the log in fxc2_fail\, and
  * ones that take more than two seconds in fxc2_slow\. */
+#ifndef FXC2_NO_TRACE
 static char log_path[MAX_PATH];
 static LONG fail_index;
 /* With FXC2_DUMP set, or %TEMP%\fxc2.dump.on present, every source is saved
@@ -107,6 +108,13 @@ static void save_source(const char *kind, const void *data, SIZE_T size, const c
     fclose(f);
     log_line("  source saved to %s", path);
 }
+
+#else
+#define log_init() ((void)0)
+#define log_line(...) ((void)0)
+#define save_source(...) ((void)0)
+#define dump_all FALSE
+#endif
 
 BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, void *reserved)
 {
@@ -308,3 +316,16 @@ HRESULT WINAPI D3DCompileFromFile(const WCHAR *filename, const D3D_SHADER_MACRO 
     ID3D10Blob_Release(source);
     return hr;
 }
+
+#ifdef FXC2_UNITY_LOADER
+/* Unity requires this export when validating the DLL, even for HLSL-only
+ * builds. vkd3d has no textual DXBC assembly input. Report it explicitly. */
+HRESULT WINAPI D3DAssemble(const void *data, SIZE_T size, const char *filename,
+        const D3D_SHADER_MACRO *macros, ID3DInclude *include, UINT flags,
+        ID3DBlob **code, ID3DBlob **errors)
+{
+    if (code) *code = NULL;
+    if (errors) *errors = NULL;
+    return E_NOTIMPL;
+}
+#endif

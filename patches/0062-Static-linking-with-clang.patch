@@ -1,0 +1,16 @@
+diff --git a/include/vkd3d_types.h b/include/vkd3d_types.h
+index 706fa7ed..2a7f0d91 100644
+--- a/include/vkd3d_types.h
++++ b/include/vkd3d_types.h
+@@ -65,7 +65,10 @@ enum vkd3d_result
+ 
+ typedef void (*PFN_vkd3d_log)(const char *format, va_list args);
+ 
+-#ifdef _WIN32
++#if defined(VKD3D_STATIC_LIB)
++# define VKD3D_IMPORT
++# define VKD3D_EXPORT
++#elif defined(_WIN32)
+ # define VKD3D_IMPORT __declspec(dllimport)
+ # define VKD3D_EXPORT __declspec(dllexport)
+ #elif defined(__GNUC__)

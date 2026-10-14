@@ -806,3 +806,11 @@ statically. Redistributing those binaries means complying with the LGPL
 (offer the source and patches, allow relinking); building the DLL as the only
 LGPL component and linking it dynamically is the simplest way to stay clean if
 this ships inside a closed product.
+
+### Linux Unity loader experiment
+
+An experimental UCRT build with a small runtime compatibility layer now
+compiles ShaderEmu, the modem decoder, and ordinary Unity shaders inside native
+Linux Unity. A working emulator/modem integration has also been reported;
+broader renderer and API coverage remain to be tested. See
+[the loader investigation](docs/unity-linux-loader.md) for the build and checks.
